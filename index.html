@@ -1,19 +1,88 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
 
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
-    </script>
-  </body>
+
+    <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body>
+<div id="app">
+    <nav id="menu">
+        <ul>
+            <li class="navButton" data-action="new">
+                <img src="img/file.png" height="20"/>
+            </li>
+            <li class="navButton" data-action="open">
+                <img src="img/folder.png" height="20"/>
+            </li>
+            <li class="navButton" data-action="save">
+                <img src="img/save.png" height="20"/>
+            </li>
+            <li class="separator"></li>
+            <li class="navButton" data-action="undo">
+                <img src="img/undo.png" height="20"/>
+            </li>
+            <li class="navButton" data-action="redo">
+                <img src="img/redo.png" height="20"/>
+            </li>
+            <li class="separator"></li>
+            <li class="navButton" data-action="cut">
+                <img src="img/scissors.png" height="20"/>
+            </li>
+            <li class="navButton" data-action="copy">
+                <img src="img/copy.png" height="20"/>
+            </li>
+            <li class="navButton" data-action="paste">
+                <img src="img/paste.png" height="20"/>
+            </li>
+            <li class="separator"></li>
+            <li class="navButton" data-action="highlights">
+                <button>Pokoloruj składnię</button>
+            </li>
+        </ul>
+    </nav>
+
+    <textarea id="editor"></textarea>
+
+</div>
+
+
+<script>
+
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+    var navs = document.getElementsByClassName("navButton");
+    [].forEach.call(navs, function (navBtn) {
+        navBtn.addEventListener("click", function () {
+            var action = navBtn.getAttribute("data-action");
+            ipcRenderer.send(action);
+        });
+
+    });
+
+    var editor = document.getElementById("editor");
+    editor.addEventListener("change", function(){
+        alert("change");
+
+    });
+
+
+    ipcRenderer.on("file", function (e, item) {
+
+        editor.value = item;
+        editor.scrollTop = editor.scrollHeight;
+        ipcRenderer.send('loaded');
+
+    });
+
+
+    ipcRenderer.on("clear", function (e, item) {
+        editor.value = "";
+    });
+
+
+</script>
+</body>
 </html>
